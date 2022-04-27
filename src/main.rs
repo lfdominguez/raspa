@@ -3,14 +3,14 @@ mod float_iterator;
 const BRUSH_WIDTH: f64 = 6.0;
 const DEFORMATION_FACTOR: f64 = 2.0;
 const DELAY: u32 = 3;
+const ANGLE_STEP: f64 = 5.0;
+const RANGE_STEP: f64 = (std::f64::consts::PI / 180.0) * ANGLE_STEP;
 
 fn get_circle_fpoints(radius: f64, start: f64, end: f64) -> Vec<(f64, f64, f64)> {
-    const angle_step: f64 = 5.0;
-    const range_step: f64 = (std::f64::consts::PI * 2.0 / 360.0) * angle_step;
 
     let mut points: Vec<(f64, f64, f64)> = Vec::new();
 
-    for angle in float_iterator::FloatIterator::new_with_step(start, end, range_step)
+    for angle in float_iterator::FloatIterator::new_with_step(start, end, RANGE_STEP)
     {
         points.push((
             angle.cos() * radius * DEFORMATION_FACTOR,
@@ -272,14 +272,14 @@ fn start_drawing(speed: u32) {
 
         let brush_points = get_brush_points(point.0, point.1, point.2);
 
-        std::thread::sleep(std::time::Duration::from_millis((index as u32 * ms_per_frame).into()));
+        std::thread::sleep(std::time::Duration::from_millis((ms_per_frame).into()));
         for point in brush_points.iter() {
             if point.1 < console_rows as f64 && point.0 < console_columns as f64 {
                 draw_string_at(point.0 as u16 + 1, point.1 as u16 + 1, "#");
             }
         }
 
-        std::thread::sleep(std::time::Duration::from_millis(((index as u32 + DELAY) * ms_per_frame).into()));
+        std::thread::sleep(std::time::Duration::from_millis(( DELAY * ms_per_frame).into()));
         for point in brush_points.iter() {
             if point.1 < console_rows as f64 && point.0 < console_columns as f64 {
                 draw_string_at(point.0 as u16, point.1 as u16, " ");
